@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+   
+    <title>Drag && Drop</title>
+
+</head>
+<body>
+<style>
+body {
+margin: 0;
+}
+#app {
+  width: 100%;
+  height: 100%;
+    position: absolute;
+}
+.bl {
+flex: 1;
+    border: 1px solid #9e9e9e;
+}
+.kn {
+    text-align: center;
+   flex: 1;
+    color: rebeccapurple;
+    }
+.title {
+    font-size: 25px;
+    font-weight: bold;
+    border-bottom: 1px solid;
+display: flex;
+ padding: 13px;
+}
+.add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    right: 0px;
+    color: #4caf50;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #e8f5e9;
+}
+.feature {
+    background: #ede7f6;
+    border: 1px solid;
+    margin: 22px;
+    padding: 23px;
+    text-align: center;
+    }
+</style>
+<div id="app">
+
+<div style="display: flex; height: 100%;">
+
+<div class="bl"
+onselectstart="return false"
+v-for="(blok, index) in post"
+v-bind:id="'bl-' + index"
+v-on:drop="drop"
+v-on:dragover="allowDrop"
+>
+
+<div class="title">
+{{blok.feats.length}}
+<div class="kn">{{blok.title}}</div>
+<div
+class="add"
+v-on:click="addNewFeature(index)"
+>+</div>
+</div>
+
+<div 
+class="feature"
+v-for="(item, index2) in blok.feats" 
+v-on:dragstart="dragStart"
+v-on:drag="dragging"
+draggable="true"
+v-bind:id="'list-' + index + '-' +index2"
+>{{ item.feature }}
+<button
+v-on:click="deleteF(index, index2)"
+>x</button>
+</div>
+
+</div>
+</div>
+</div>
+ <script src="vue.js"></script>
+
+<script>
+
+new Vue({
+el: '#app',
+      data: {
+      post: [
+{title: 'To do', feats: []},
+{title: 'In Progress', feats: []},
+{title: 'Testing', feats: []},
+{title: 'Complete', feats: []},
+],
+nextFeature: 1
+},
+methods: {
+addNewFeature: function (a) {
+    var nid = this.nextFeature++;
+      this.post[a].feats.push({
+        id: nid,
+        feature: 'feature '+nid
+      })
+    },
+deleteF: function (bl, index) {
+    this.post[bl].feats.splice(index, 1);
+    },
+
+dragStart:function(event)  {
+            event.dataTransfer.setData("Cach", event.target.id);
+          },
+dragging:function(event) {
+
+},
+
+allowDrop:function(event) {
+event.preventDefault();
+},
+
+drop:function(event) {
+var data = event.dataTransfer.getData("Cach");
+
+if (event.target.className != 'feature') {
+var
+list = data.split('-'),
+bl = event.target.id.split('-'),
+idf = this.post[list[1]].feats[list[2]].id;
+
+this.post[list[1]].feats.splice(list[2], 1);
+this.post[bl[1]].feats.push({
+        id: idf,
+        feature: 'feature '+idf
+      })
+
+
+}
+
+}
+
+}
+});
+</script>
+    
+</body>
+</html>
